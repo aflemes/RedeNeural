@@ -5,6 +5,8 @@
  */
 package redeneural;
 
+import redeneural.view.Interface;
+
 /**
  *
  * @author aflemes
@@ -16,6 +18,8 @@ public class RedeNeural {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Interface interfaceTemp = new Interface();
+        interfaceTemp.setVisible(true);
     }
     
 }

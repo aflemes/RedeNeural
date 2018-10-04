@@ -1,0 +1,8 @@
+Estrutura
+Neurônios de entrada - Todos elementos da linha
+Neurônios escondidos - É a soma dos elementos de entrada (normalizado) multiplicado pelo peso.
+Neuônios de saída - É a soma dos elementos do neurônio escondidos multiplicados pelo peso
+
+Nos neurônios de saída temos que utilizar o formato dummy (liga o bit apenas para a classe correspondente).
+
+Quando a professora menciona em 1000 iterações, é fazer o processo 1000x para todas as linhas do arquivo.
