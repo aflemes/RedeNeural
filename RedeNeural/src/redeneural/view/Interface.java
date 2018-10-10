@@ -5,8 +5,13 @@
  */
 package redeneural.view;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import redeneural.model.Amostra;
+import java.util.Scanner;
+import redeneural.model.Perceptron;
 
 /**
  *
@@ -17,7 +22,8 @@ public class Interface extends javax.swing.JFrame {
     /**
      * Creates new form Interface
      */
-    private Amostra amostra;
+    private Perceptron perceptron;
+    private ArrayList<Perceptron> lstPerceptron = new ArrayList<>();
     
     public Interface() {
         initComponents();
@@ -38,7 +44,7 @@ public class Interface extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setText("Iniciar Reconhcimento");
+        jButton1.setText("Iniciar Treinamento");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -50,7 +56,7 @@ public class Interface extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(231, Short.MAX_VALUE)
+                .addContainerGap(243, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addGap(30, 30, 30))
         );
@@ -67,7 +73,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        
+        loadFile();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -106,11 +112,53 @@ public class Interface extends javax.swing.JFrame {
     }
     
     private void loadFile(){
+        String[] split;
+        String linha;
+        Perceptron perceptronTemp;
+        ArrayList<Double> neuronioEntradaTemp;
+        int classe = 0;
+        double valor = 0.0;
         
+        try {
+            FileReader arq = new FileReader("src\\redeneural\\data\\pendigits.trainning");
+            BufferedReader lerArq = new BufferedReader(arq);
+            linha = lerArq.readLine(); // lê a primeira linha           
+
+            while (linha != null) {
+                perceptronTemp      = new Perceptron();
+                neuronioEntradaTemp = new ArrayList<Double>();
+                classe = 0;
+                split = linha.split(",");
+                
+                for (int i = 0; i < split.length; i++) {
+                    valor = Double.parseDouble(split[i]);
+                    if (valor > 0)
+                        valor = valor / 10;
+                    
+                    neuronioEntradaTemp.add(valor);
+                    
+                    if (i == split.length - 1) {
+                       classe = Integer.parseInt(split[i].trim());
+                    }
+                }
+                perceptronTemp.setNeuronioEntrada(neuronioEntradaTemp);
+                perceptronTemp.setClasse(classe);
+                //
+                lstPerceptron.add(perceptronTemp);
+                linha = lerArq.readLine(); // lê da segunda até a última linha
+            }
+
+            arq.close();
+        } catch (IOException e) {
+            System.err.printf("Erro na abertura do arquivo: %s.\n",
+            e.getMessage());
+        }
+        
+        System.out.println("Arquivo lido com sucesso! ");
     }
     
     private void loadAmostraTemporaria(){
-        amostra = new Amostra();
+        perceptron = new Perceptron();
         ArrayList<Double> valorTemporario = new ArrayList<Double>();
         valorTemporario.add(4.7);
         valorTemporario.add(10.0);
@@ -129,8 +177,8 @@ public class Interface extends javax.swing.JFrame {
         valorTemporario.add(4.0);
         valorTemporario.add(98.0);
         
-        amostra.setClasse(8);
-        amostra.setValorNormalizado(valorTemporario);
+        perceptron.setClasse(8);
+        perceptron.setNeuronioEntrada(valorTemporario);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
