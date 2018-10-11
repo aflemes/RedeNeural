@@ -132,7 +132,7 @@ public class Perceptron {
             neuronioSaida.get(i).setSaida(novoValor);
         }
         
-        /* PASSO 3*/
+        /* PASSO 3 */
         //CALCULA O ERRO PARA O NEURONIO DE SAIDA
         for (int j=0; j < neuronioSaida.size();j++){            
             if (j == this.getClasse()){
