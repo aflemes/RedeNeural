@@ -128,7 +128,7 @@ public class Perceptron {
                 novoValor += (neuronioOculto.get(j).getSaida() * neuronioSaida.get(i).getPeso());                
             }
             //funcao sigmoidal
-            novoValor = 1 / 1 + exp(novoValor);
+            novoValor = 1 / 1 + exp(-novoValor);
             neuronioSaida.get(i).setSaida(novoValor);
         }
         
