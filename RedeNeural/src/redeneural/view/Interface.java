@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import redeneural.model.Neuronio;
 import redeneural.model.Perceptron;
 
 /**
@@ -26,9 +27,7 @@ public class Interface extends javax.swing.JFrame {
     private ArrayList<Perceptron> lstPerceptron = new ArrayList<>();
     
     public Interface() {
-        initComponents();
-        loadAmostraTemporaria();
-        //loadFile();
+        initComponents();        
     }
 
     /**
@@ -41,6 +40,7 @@ public class Interface extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -51,13 +51,22 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Iniciar Amostra");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(243, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
@@ -65,7 +74,9 @@ public class Interface extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(58, 58, 58)
                 .addComponent(jButton1)
-                .addContainerGap(219, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addContainerGap(190, Short.MAX_VALUE))
         );
 
         pack();
@@ -74,7 +85,13 @@ public class Interface extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         loadFile();
+        initTreinamento();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        loadAmostraTemporaria();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -115,7 +132,9 @@ public class Interface extends javax.swing.JFrame {
         String[] split;
         String linha;
         Perceptron perceptronTemp;
-        ArrayList<Double> neuronioEntradaTemp;
+        ArrayList<Neuronio> lstNeuronioEntradaTemp;
+        Neuronio neuronioTemp;
+        
         int classe = 0;
         double valor = 0.0;
         
@@ -125,8 +144,8 @@ public class Interface extends javax.swing.JFrame {
             linha = lerArq.readLine(); // lê a primeira linha           
 
             while (linha != null) {
-                perceptronTemp      = new Perceptron();
-                neuronioEntradaTemp = new ArrayList<Double>();
+                perceptronTemp         = new Perceptron();
+                lstNeuronioEntradaTemp = new ArrayList<Neuronio>();
                 classe = 0;
                 split = linha.split(",");
                 
@@ -135,13 +154,17 @@ public class Interface extends javax.swing.JFrame {
                     if (valor > 0)
                         valor = valor / 10;
                     
-                    neuronioEntradaTemp.add(valor);
-                    
+                    neuronioTemp = new Neuronio();
+                    neuronioTemp.setEntrada(valor);
+                                                            
                     if (i == split.length - 1) {
                        classe = Integer.parseInt(split[i].trim());
                     }
+                    
+                    lstNeuronioEntradaTemp.add(neuronioTemp);
                 }
-                perceptronTemp.setNeuronioEntrada(neuronioEntradaTemp);
+                        
+                perceptronTemp.setNeuronioEntrada(lstNeuronioEntradaTemp);
                 perceptronTemp.setClasse(classe);
                 //
                 lstPerceptron.add(perceptronTemp);
@@ -159,29 +182,92 @@ public class Interface extends javax.swing.JFrame {
     
     private void loadAmostraTemporaria(){
         perceptron = new Perceptron();
-        ArrayList<Double> valorTemporario = new ArrayList<Double>();
-        valorTemporario.add(4.7);
-        valorTemporario.add(10.0);
-        valorTemporario.add(2.7);
-        valorTemporario.add(8.1);
-        valorTemporario.add(5.7);
-        valorTemporario.add(3.7);
-        valorTemporario.add(2.6);
-        valorTemporario.add(0.0);
-        valorTemporario.add(0.0);
-        valorTemporario.add(2.3);
-        valorTemporario.add(5.6);
-        valorTemporario.add(5.3);
-        valorTemporario.add(10.0);
-        valorTemporario.add(9.0);
-        valorTemporario.add(4.0);
-        valorTemporario.add(98.0);
+        ArrayList<Neuronio> lstNeuronios = new ArrayList<Neuronio>();
+        
+        Neuronio neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(4.7);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(10.0);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(2.7);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(8.1);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(5.7);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(3.7);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(2.6);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(0.0);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(0.0);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(2.3);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(5.6);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(5.3);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(10.0);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(9.0);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(4.0);
+        lstNeuronios.add(neuronioTemp);
+        
+        neuronioTemp = new Neuronio();
+        neuronioTemp.setEntrada(9.8);
+        lstNeuronios.add(neuronioTemp);
         
         perceptron.setClasse(8);
-        perceptron.setNeuronioEntrada(valorTemporario);
+        perceptron.setNeuronioEntrada(lstNeuronios);
+        
+        for (int i = 0; i < 10; i++) {
+            perceptron.processar();
+        }        
     }
 
+    private void initTreinamento(){
+        Perceptron perceptronTemp = new Perceptron();
+        
+        for (int i=0; i < 100; i++){
+            for (int j=0; j < lstPerceptron.size();j++){
+                perceptronTemp = lstPerceptron.get(j);
+                perceptronTemp.processar();
+            }
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     // End of variables declaration//GEN-END:variables
 }
