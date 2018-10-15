@@ -251,7 +251,7 @@ public class Interface extends javax.swing.JFrame {
         perceptron.setClasse(8);
         perceptron.setNeuronioEntrada(lstNeuronios);
         
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             perceptron.processar();
         }        
     }

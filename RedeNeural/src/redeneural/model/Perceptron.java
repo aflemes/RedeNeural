@@ -118,18 +118,21 @@ public class Perceptron {
                 novoValor += (neuronioEntrada.get(j).getSaida() * neuronioEntrada.get(i).getPeso());              
             }
             neuronioOculto.get(i).setSaida(novoValor);
+            System.out.println(" valor i " + i + " -> " + novoValor + " peso() " + neuronioEntrada.get(i).getPeso());
         }
         
         //calcula para o neuronio de saida
         //somatorio de N3 = (N1.Saida * Peso da conexao de N1 para N3) + (N2.Saida * Peso da conexao de N2 para N3) 
         for (int i=0;i < neuronioSaida.size();i++){
             novoValor = 0.0;
+            System.out.println(" i " + i);
             for (int j=0; j < neuronioOculto.size();j++){
-                novoValor += (neuronioOculto.get(j).getSaida() * neuronioSaida.get(i).getPeso());                
+                novoValor += (neuronioOculto.get(j).getSaida() * neuronioOculto.get(i).getPeso());                
             }
+            
             //funcao sigmoidal
             novoValor = 1 / 1 + exp(-novoValor);
-            neuronioSaida.get(i).setSaida(novoValor);
+            neuronioSaida.get(i).setSaida(novoValor);            
         }
         
         /* PASSO 3 */
@@ -145,12 +148,10 @@ public class Perceptron {
         
         //CALCULA O ERRO PARA O NEURONIO OCULTO
         for (int i=0; i < neuronioOculto.size();i++){
-            novoFatorErro = 0.0;
-            for (int j=0; j < neuronioSaida.size();j++){
-                //erro do neuronio de saida * o peso do neuronio oculto
-                novoFatorErro += neuronioSaida.get(j).getErro() * neuronioSaida.get(j).getPeso();
-            }
-            neuronioOculto.get(i).setErro(novoFatorErro);
+            novoFatorErro = neuronioOculto.get(i).getSaida() * (1 - neuronioOculto.get(i).getSaida()) * neuronioOculto.get(i).getErro();
+            
+            neuronioOculto.get(i).setErro(novoFatorErro);            
+            System.out.println(" neuronioOculto erro -> " + neuronioOculto.get(i).getErro());
         }                
         
         /* PASSO 4 */
@@ -158,32 +159,35 @@ public class Perceptron {
         for (int i=0;i < neuronioOculto.size();i++){
             novoPeso = 0.0;
             for (int j=0; j < neuronioEntrada.size();j++){
-                novoPeso += neuronioOculto.get(i).getPeso() + getTaxaAprendizagem() * 
-                            neuronioEntrada.get(i).getSaida() * neuronioEntrada.get(i).getErro();
+                novoPeso += neuronioEntrada.get(i).getPeso() + getTaxaAprendizagem() * 
+                            neuronioEntrada.get(i).getSaida() * neuronioOculto.get(i).getErro();
             }
-            neuronioOculto.get(i).setPeso(novoPeso);            
+            neuronioEntrada.get(i).setPeso(novoPeso);                
         }
         
         for (int i=0;i < neuronioSaida.size();i++){
             novoPeso = 0.0;
             for (int j=0; j < neuronioOculto.size();j++){
-                novoPeso += neuronioSaida.get(i).getPeso() + getTaxaAprendizagem() * 
-                            neuronioOculto.get(i).getSaida() * neuronioOculto.get(i).getErro();
+                novoPeso += neuronioOculto.get(i).getPeso() + getTaxaAprendizagem() * 
+                            neuronioOculto.get(i).getSaida() * neuronioSaida.get(i).getErro();
             }
-            neuronioSaida.get(i).setPeso(novoPeso);            
+            neuronioOculto.get(i).setPeso(novoPeso);            
         }
 
         //formatacao DUMMY
         maiorValor = neuronioSaida.get(0).getSaida();
         indice     = 0;
         for (int i = 0; i < neuronioSaida.size(); i++) {
-            if (neuronioSaida.get(i).getSaida() > maiorValor){
+            /*if (neuronioSaida.get(i).getSaida() > maiorValor){
                 maiorValor = neuronioSaida.get(i).getSaida();
                 indice = i;
-            }            
+            } */           
+            System.out.println("Indice " + i + " valor -> " + neuronioSaida.get(i).getSaida());
         }
         
-        System.out.println("Indice " + indice + " valor -> " + maiorValor);
+        System.out.println("-------------------");
+        
+        
     }
     
     
