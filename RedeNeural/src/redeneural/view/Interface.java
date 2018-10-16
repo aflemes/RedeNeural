@@ -283,6 +283,8 @@ public class Interface extends javax.swing.JFrame {
     }
     
     private void loadAmostraTemporaria(){
+        Double maiorValor = 0.0;
+        int indice = 0;
         Double[][] patternInputUniq   = new Double[1][16];
         Double[][] expectedOutputUniq = new Double[1][10]; 
     
@@ -321,8 +323,14 @@ public class Interface extends javax.swing.JFrame {
         DefaultTableModel tabelaModelo = (DefaultTableModel) jTabela.getModel();
         tabelaModelo.setNumRows(0); //limpa a tabela
         for (int i = 0; i < saida.length; i++) {//seta cor
-            tabelaModelo.addRow(new String[]{"Neuronio " + (i + 1), "" + formater.format(saida[i])});                
+            tabelaModelo.addRow(new String[]{"Neuronio " + (i + 1), "" + formater.format(saida[i])}); 
+            
+            if (saida[i] > maiorValor){
+                indice = i;
+                maiorValor = saida[i];
+            }
         }
+        jTabela.setRowSelectionInterval(indice, indice);
         
     }
     
