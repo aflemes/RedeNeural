@@ -9,10 +9,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
-import redeneural.model.Neuronio;
-import redeneural.model.Perceptron;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import redeneural.Backpropagation;
 
 /**
  *
@@ -23,11 +26,14 @@ public class Interface extends javax.swing.JFrame {
     /**
      * Creates new form Interface
      */
-    private Perceptron perceptron;
-    private ArrayList<Perceptron> lstPerceptron = new ArrayList<>();
+    private Backpropagation rede;
+    private Double[][] patternInput   = new Double[7494][16];
+    private Double[][] expectedOutput = new Double[7494][10]; 
+    NumberFormat formater = new DecimalFormat("#0.000000");
     
     public Interface() {
-        initComponents();        
+        initComponents();
+        initRede();
     }
 
     /**
@@ -41,6 +47,11 @@ public class Interface extends javax.swing.JFrame {
 
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTabela = new javax.swing.JTable();
+        jButton3 = new javax.swing.JButton();
+        jTestValores = new javax.swing.JTextField();
+        jMessage = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -58,25 +69,72 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
+        jTabela.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Neurônio", "Saída"
+            }
+        ));
+        jScrollPane1.setViewportView(jTabela);
+
+        jButton3.setText("Testar valores");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jTestValores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTestValoresActionPerformed(evt);
+            }
+        });
+
+        jMessage.setPreferredSize(new java.awt.Dimension(34, 14));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(243, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(30, 30, 30))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTestValores)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(30, 30, 30))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(58, 58, 58)
-                .addComponent(jButton1)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3)
+                    .addComponent(jTestValores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2)
-                .addContainerGap(190, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -92,6 +150,60 @@ public class Interface extends javax.swing.JFrame {
         // TODO add your handling code here:
         loadAmostraTemporaria();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTestValoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTestValoresActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTestValoresActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        Double[][] patternInputUniq   = new Double[1][16];
+        Double[][] expectedOutputUniq = new Double[1][10];
+        Double maiorValor = 0.0;
+        
+        String[] split = jTestValores.getText().split(",");
+        double valor = 0.0;
+        int indice = 0;
+        
+        if (split.length != 17){
+            JOptionPane.showMessageDialog(null, "Quantidade de dados teste inválido!", "Informacao!", JOptionPane.ERROR_MESSAGE, null);
+            return;
+        }
+        for (int i = 0; i < split.length - 1; i++) {
+            valor = Double.parseDouble(split[i]);
+            if (valor > 0)
+                valor = valor / 10;
+
+            patternInputUniq[indice][i] = valor;
+        }
+        
+        for (int i = 0; i < 10; i++) {
+            //a ultima posicao do arquivo e destinado a classe esperada
+            if ((i + 1) == Float.parseFloat(split[split.length - 1])){
+                expectedOutputUniq[indice][i] = 1.0;
+            }
+            else
+                expectedOutputUniq[indice][i] = 0.0;
+        }
+        
+        rede.setTrainingData(patternInputUniq, expectedOutputUniq);
+               
+        double erro = rede.train(1000); //treinamento
+        
+        Double[] saida = rede.getOutput();
+        DefaultTableModel tabelaModelo = (DefaultTableModel) jTabela.getModel();
+        tabelaModelo.setNumRows(0); //limpa a tabela
+        for (int i = 0; i < saida.length; i++) {//seta cor
+            tabelaModelo.addRow(new String[]{"Neuronio " + (i + 1), "" + formater.format(saida[i])}); 
+            
+            if (saida[i] > maiorValor){
+                indice = i;
+                maiorValor = saida[i];
+            }
+        }
+        
+        jTabela.setRowSelectionInterval(indice, indice);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -131,10 +243,7 @@ public class Interface extends javax.swing.JFrame {
     private void loadFile(){
         String[] split;
         String linha;
-        Perceptron perceptronTemp;
-        ArrayList<Neuronio> lstNeuronioEntradaTemp;
-        Neuronio neuronioTemp;
-        
+        int indice = 0;
         int classe = 0;
         double valor = 0.0;
         
@@ -144,31 +253,26 @@ public class Interface extends javax.swing.JFrame {
             linha = lerArq.readLine(); // lê a primeira linha           
 
             while (linha != null) {
-                perceptronTemp         = new Perceptron();
-                lstNeuronioEntradaTemp = new ArrayList<Neuronio>();
-                classe = 0;
                 split = linha.split(",");
                 
-                for (int i = 0; i < split.length; i++) {
+                for (int i = 0; i < split.length - 1; i++) {
                     valor = Double.parseDouble(split[i]);
                     if (valor > 0)
                         valor = valor / 10;
                     
-                    neuronioTemp = new Neuronio();
-                    neuronioTemp.setEntrada(valor);
-                                                            
-                    if (i == split.length - 1) {
-                       classe = Integer.parseInt(split[i].trim());
-                    }
-                    
-                    lstNeuronioEntradaTemp.add(neuronioTemp);
+                    patternInput[indice][i] = valor;
                 }
-                        
-                perceptronTemp.setNeuronioEntrada(lstNeuronioEntradaTemp);
-                perceptronTemp.setClasse(classe);
-                //
-                lstPerceptron.add(perceptronTemp);
+                for (int i = 0; i < 10; i++) {
+                    //a ultima posicao do arquivo e destinado a classe esperada
+                    if ((i + 1) == Float.parseFloat(split[split.length - 1])){
+                        expectedOutput[indice][i] = 1.0;
+                    }
+                    else
+                        expectedOutput[indice][i] = 0.0;
+                }
+               
                 linha = lerArq.readLine(); // lê da segunda até a última linha
+                indice++;
             }
 
             arq.close();
@@ -176,98 +280,76 @@ public class Interface extends javax.swing.JFrame {
             System.err.printf("Erro na abertura do arquivo: %s.\n",
             e.getMessage());
         }
-        
-        System.out.println("Arquivo lido com sucesso! ");
     }
     
     private void loadAmostraTemporaria(){
-        perceptron = new Perceptron();
-        ArrayList<Neuronio> lstNeuronios = new ArrayList<Neuronio>();
+        Double[][] patternInputUniq   = new Double[1][16];
+        Double[][] expectedOutputUniq = new Double[1][10]; 
+    
+        patternInputUniq[0][0] = 4.7 ;
+        patternInputUniq[0][1] = 10.0;
+        patternInputUniq[0][2] = 2.7;
+        patternInputUniq[0][3] = 8.1;
+        patternInputUniq[0][4] = 5.7;
+        patternInputUniq[0][5] = 3.7;
+        patternInputUniq[0][6] = 2.6;
+        patternInputUniq[0][7] = 0.0;
+        patternInputUniq[0][8] = 0.0;
+        patternInputUniq[0][9] = 2.3;
+        patternInputUniq[0][10] = 5.6;
+        patternInputUniq[0][11] = 5.3;
+        patternInputUniq[0][12] = 10.0;
+        patternInputUniq[0][13] = 9.0;
+        patternInputUniq[0][14] = 4.0;
+        patternInputUniq[0][15] = 9.8;
+                
+        expectedOutputUniq[0][0]  = 0.0;
+        expectedOutputUniq[0][1]  = 0.0;
+        expectedOutputUniq[0][2]  = 0.0;
+        expectedOutputUniq[0][3]  = 0.0;
+        expectedOutputUniq[0][4]  = 0.0;
+        expectedOutputUniq[0][5]  = 0.0;
+        expectedOutputUniq[0][6]  = 0.0;
+        expectedOutputUniq[0][7]  = 1.0;
+        expectedOutputUniq[0][8]  = 0.0;
+        expectedOutputUniq[0][9]  = 0.0;
         
-        Neuronio neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(4.7);
-        lstNeuronios.add(neuronioTemp);
+        rede.setTrainingData(patternInputUniq, expectedOutputUniq);
+        double erro = rede.train(1000); //treinamento
         
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(10.0);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(2.7);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(8.1);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(5.7);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(3.7);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(2.6);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(0.0);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(0.0);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(2.3);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(5.6);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(5.3);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(10.0);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(9.0);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(4.0);
-        lstNeuronios.add(neuronioTemp);
-        
-        neuronioTemp = new Neuronio();
-        neuronioTemp.setEntrada(9.8);
-        lstNeuronios.add(neuronioTemp);
-        
-        perceptron.setClasse(8);
-        perceptron.setNeuronioEntrada(lstNeuronios);
-        
-        for (int i = 0; i < 2; i++) {
-            perceptron.processar();
-        }        
-    }
-
-    private void initTreinamento(){
-        Perceptron perceptronTemp = new Perceptron();
-        
-        for (int i=0; i < 100; i++){
-            for (int j=0; j < lstPerceptron.size();j++){
-                perceptronTemp = lstPerceptron.get(j);
-                perceptronTemp.processar();
-            }
+        Double[] saida = rede.getOutput();
+        DefaultTableModel tabelaModelo = (DefaultTableModel) jTabela.getModel();
+        tabelaModelo.setNumRows(0); //limpa a tabela
+        for (int i = 0; i < saida.length; i++) {//seta cor
+            tabelaModelo.addRow(new String[]{"Neuronio " + (i + 1), "" + formater.format(saida[i])});                
         }
+        
+    }
+    
+    private void initRede(){
+        rede = new Backpropagation();
+    }
+    private void initTreinamento(){
+        rede.setTrainingData(patternInput, expectedOutput);
+        
+        jMessage.setText("Treinando a rede neural, aguarde...");
+        Thread one = new Thread() {
+            public void run() {
+                rede.train(100);
+                jMessage.setText("");
+            }  
+        };
+        
+        one.start();
+        //rede.train(100);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jMessage;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTabela;
+    private javax.swing.JTextField jTestValores;
     // End of variables declaration//GEN-END:variables
 }
