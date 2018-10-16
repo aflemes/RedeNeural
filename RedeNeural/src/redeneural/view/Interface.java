@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
+import redeneural.model.Neuronio;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import redeneural.Backpropagation;
@@ -29,6 +30,7 @@ public class Interface extends javax.swing.JFrame {
     private Backpropagation rede;
     private Double[][] patternInput   = new Double[7494][16];
     private Double[][] expectedOutput = new Double[7494][10]; 
+    private ArrayList<Neuronio> lstResultados;
     NumberFormat formater = new DecimalFormat("#0.000000");
     
     public Interface() {
@@ -52,6 +54,7 @@ public class Interface extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jTestValores = new javax.swing.JTextField();
         jMessage = new javax.swing.JLabel();
+        jMatrizConfusao = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -97,6 +100,13 @@ public class Interface extends javax.swing.JFrame {
 
         jMessage.setPreferredSize(new java.awt.Dimension(34, 14));
 
+        jMatrizConfusao.setText("Matriz de Confusão");
+        jMatrizConfusao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMatrizConfusaoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -115,7 +125,8 @@ public class Interface extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jMatrizConfusao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(30, 30, 30))))
         );
         layout.setVerticalGroup(
@@ -130,7 +141,9 @@ public class Interface extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2))
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jMatrizConfusao))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -143,7 +156,7 @@ public class Interface extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         loadFile();
-        initTreinamento();
+        initTreinamento();        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -159,7 +172,9 @@ public class Interface extends javax.swing.JFrame {
         // TODO add your handling code here:
         Double[][] patternInputUniq   = new Double[1][16];
         Double[][] expectedOutputUniq = new Double[1][10];
-        Double maiorValor = 0.0;
+        Neuronio neuronioTemp         = new Neuronio();
+        Double maiorValor             = 0.0;
+        int neuronioEsperado           = 0;
         
         String[] split = jTestValores.getText().split(",");
         double valor = 0.0;
@@ -176,10 +191,11 @@ public class Interface extends javax.swing.JFrame {
 
             patternInputUniq[indice][i] = valor;
         }
+        neuronioEsperado = Integer.parseInt(split[split.length - 1]);
         
         for (int i = 0; i < 10; i++) {
             //a ultima posicao do arquivo e destinado a classe esperada
-            if ((i + 1) == Float.parseFloat(split[split.length - 1])){
+            if ((i + 1) == neuronioEsperado){
                 expectedOutputUniq[indice][i] = 1.0;
             }
             else
@@ -201,9 +217,21 @@ public class Interface extends javax.swing.JFrame {
                 maiorValor = saida[i];
             }
         }
+        neuronioTemp.setId(neuronioEsperado);
+        neuronioTemp.setResultadoObtido(indice);
+                
+        lstResultados = new ArrayList<Neuronio>();
+        lstResultados.add(neuronioTemp);
         
         jTabela.setRowSelectionInterval(indice, indice);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jMatrizConfusaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMatrizConfusaoActionPerformed
+        // TODO add your handling code here:
+        MatrizConfusao jMatrizConfusao = new MatrizConfusao();
+        jMatrizConfusao.setLstResultados(lstResultados);
+        jMatrizConfusao.setVisible(true);
+    }//GEN-LAST:event_jMatrizConfusaoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -345,16 +373,24 @@ public class Interface extends javax.swing.JFrame {
             public void run() {
                 rede.train(100);
                 jMessage.setText("");
+                initMatrizConfusao();
             }  
         };
         
         one.start();
         //rede.train(100);
     }
+    
+    private void initMatrizConfusao(){
+        jMatrizConfusao.setEnabled(true);
+    }
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jMatrizConfusao;
     private javax.swing.JLabel jMessage;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTabela;
