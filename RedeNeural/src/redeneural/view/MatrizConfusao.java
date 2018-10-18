@@ -10,6 +10,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.util.ArrayList;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import redeneural.model.Neuronio;
@@ -28,6 +29,7 @@ public class MatrizConfusao extends javax.swing.JFrame {
         this.setLstResultados(lstResultados);
         
         initComponents();
+        initJResultados();
         initResultados();
     }
 
@@ -46,6 +48,8 @@ public class MatrizConfusao extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jlblErro = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,7 +67,7 @@ public class MatrizConfusao extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
+                "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -79,15 +83,25 @@ public class MatrizConfusao extends javax.swing.JFrame {
         if (jResultados.getColumnModel().getColumnCount() > 0) {
             jResultados.getColumnModel().getColumn(0).setResizable(false);
             jResultados.getColumnModel().getColumn(1).setResizable(false);
+            jResultados.getColumnModel().getColumn(1).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(2).setResizable(false);
+            jResultados.getColumnModel().getColumn(2).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(3).setResizable(false);
+            jResultados.getColumnModel().getColumn(3).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(4).setResizable(false);
+            jResultados.getColumnModel().getColumn(4).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(5).setResizable(false);
+            jResultados.getColumnModel().getColumn(5).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(6).setResizable(false);
+            jResultados.getColumnModel().getColumn(6).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(7).setResizable(false);
+            jResultados.getColumnModel().getColumn(7).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(8).setResizable(false);
+            jResultados.getColumnModel().getColumn(8).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(9).setResizable(false);
+            jResultados.getColumnModel().getColumn(9).setPreferredWidth(40);
             jResultados.getColumnModel().getColumn(10).setResizable(false);
+            jResultados.getColumnModel().getColumn(10).setPreferredWidth(40);
         }
 
         jLabel1.setText("Resultados obtidos");
@@ -103,6 +117,10 @@ public class MatrizConfusao extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setText("Porcentagem de acerto:");
+
+        jlblErro.setText("jLabel4");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -111,18 +129,22 @@ public class MatrizConfusao extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(136, 136, 136))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel11))
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(67, 67, 67))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(266, 266, 266))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton1)
-                        .addContainerGap())))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jlblErro)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton1))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(42, 42, 42))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,9 +159,12 @@ public class MatrizConfusao extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel11)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jLabel3)
+                    .addComponent(jlblErro))
+                .addContainerGap())
         );
 
         pack();
@@ -150,6 +175,14 @@ public class MatrizConfusao extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void initJResultados(){
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        for (int i = 0; i < jResultados.getColumnModel().getColumnCount(); i++) {
+            jResultados.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }        
+    }
     /**
      * @param args the command line arguments
      */
@@ -200,6 +233,7 @@ public class MatrizConfusao extends javax.swing.JFrame {
         final Color[] cores = new Color[10];
         cores[0] = Color.RED;
         String linha;
+        int qtdeAcertos = 0;
         
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -212,8 +246,10 @@ public class MatrizConfusao extends javax.swing.JFrame {
                 indiceX = lstResultados.get(i).getId();
                 indiceY = lstResultados.get(i).getResultadoObtido();
                 
-                System.out.println(" calculando... ");
-                matrizConfusao[indiceX-1][indiceY]++;
+                if (indiceX == indiceY)
+                    qtdeAcertos++;
+                
+                matrizConfusao[indiceX][indiceY]++;
             }
         }
         
@@ -221,7 +257,7 @@ public class MatrizConfusao extends javax.swing.JFrame {
         tabelaModelo.setNumRows(0); //limpa a tabela
         for (int i = 0; i < matrizConfusao.length; i++) {
             tabelaModelo.addRow(new String[]{
-                                    String.valueOf(i + 1) ,
+                                    String.valueOf(i) ,
                                     String.valueOf(matrizConfusao[i][0]),
                                     String.valueOf(matrizConfusao[i][1]),
                                     String.valueOf(matrizConfusao[i][2]),
@@ -247,6 +283,9 @@ public class MatrizConfusao extends javax.swing.JFrame {
                 return c;
             }
         });
+        
+        //Atribui porcentagem de erro
+        jlblErro.setText(String.valueOf(qtdeAcertos * 100 / lstResultados.size()) + "%");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -254,7 +293,9 @@ public class MatrizConfusao extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JTable jResultados;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel jlblErro;
     // End of variables declaration//GEN-END:variables
 }

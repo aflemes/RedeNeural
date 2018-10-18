@@ -68,9 +68,9 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jMatrizConfusao" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jScrollPane1" min="-2" pref="220" max="-2" attributes="0"/>
+                  <Component id="jScrollPane1" min="-2" pref="187" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
               <Component id="jMessage" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
@@ -104,7 +104,7 @@
         <Component class="javax.swing.JTable" name="jTabela">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="2" rowCount="11">
+              <Table columnCount="2" rowCount="10">
                 <Column editable="true" title="Neur&#xf4;nio" type="java.lang.Object"/>
                 <Column editable="true" title="Sa&#xed;da" type="java.lang.Object"/>
               </Table>
@@ -123,6 +123,10 @@
                 </Column>
               </TableColumnModel>
             </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[150, 160]"/>
+            </Property>
+            <Property name="requestFocusEnabled" type="boolean" value="false"/>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
@@ -153,6 +157,7 @@
     <Component class="javax.swing.JButton" name="jMatrizConfusao">
       <Properties>
         <Property name="text" type="java.lang.String" value="Matriz de Confus&#xe3;o"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMatrizConfusaoActionPerformed"/>
