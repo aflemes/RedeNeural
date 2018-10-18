@@ -28,9 +28,9 @@ public class Interface extends javax.swing.JFrame {
      * Creates new form Interface
      */
     private Backpropagation rede;
-    private Double[][] patternInput   = new Double[7494][16];
-    private Double[][] expectedOutput = new Double[7494][10]; 
-    private ArrayList<Neuronio> lstResultados;
+    private Double[][] patternInput   = new Double[1][17];
+    private Double[][] expectedOutput = new Double[1][10]; 
+    private ArrayList<Neuronio> lstResultados = new ArrayList<Neuronio>();
     NumberFormat formater = new DecimalFormat("#0.000000");
     
     public Interface() {
@@ -55,6 +55,7 @@ public class Interface extends javax.swing.JFrame {
         jTestValores = new javax.swing.JTextField();
         jMessage = new javax.swing.JLabel();
         jMatrizConfusao = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -74,6 +75,13 @@ public class Interface extends javax.swing.JFrame {
 
         jTabela.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null},
                 {null, null},
                 {null, null},
                 {null, null},
@@ -107,6 +115,13 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setText("Iniciar Teste");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -126,7 +141,8 @@ public class Interface extends javax.swing.JFrame {
                             .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jMatrizConfusao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jMatrizConfusao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(30, 30, 30))))
         );
         layout.setVerticalGroup(
@@ -140,6 +156,8 @@ public class Interface extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -155,8 +173,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        loadFile();
-        initTreinamento();        
+        initTreinamento();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -172,13 +189,9 @@ public class Interface extends javax.swing.JFrame {
         // TODO add your handling code here:
         Double[][] patternInputUniq   = new Double[1][16];
         Double[][] expectedOutputUniq = new Double[1][10];
-        Neuronio neuronioTemp         = new Neuronio();
-        Double maiorValor             = 0.0;
-        int neuronioEsperado           = 0;
-        
         String[] split = jTestValores.getText().split(",");
-        double valor = 0.0;
-        int indice = 0;
+        int neuronioEsperado = 0,indice = 0;
+        Double valor = 0.0;
         
         if (split.length != 17){
             JOptionPane.showMessageDialog(null, "Quantidade de dados teste inválido!", "Informacao!", JOptionPane.ERROR_MESSAGE, null);
@@ -204,9 +217,16 @@ public class Interface extends javax.swing.JFrame {
         
         rede.setTrainingData(patternInputUniq, expectedOutputUniq);
                
-        double erro = rede.train(1000); //treinamento
+        double erro = rede.train(100); //treinamento
         
+        listaResultadosTela(neuronioEsperado);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void listaResultadosTela(int neuronioEsperado){
+        Neuronio neuronioTemp         = new Neuronio();
+        Double maiorValor = 0.0;
         Double[] saida = rede.getOutput();
+        int indice = 0;
         DefaultTableModel tabelaModelo = (DefaultTableModel) jTabela.getModel();
         tabelaModelo.setNumRows(0); //limpa a tabela
         for (int i = 0; i < saida.length; i++) {//seta cor
@@ -220,18 +240,20 @@ public class Interface extends javax.swing.JFrame {
         neuronioTemp.setId(neuronioEsperado);
         neuronioTemp.setResultadoObtido(indice);
                 
-        lstResultados = new ArrayList<Neuronio>();
         lstResultados.add(neuronioTemp);
         
         jTabela.setRowSelectionInterval(indice, indice);
-    }//GEN-LAST:event_jButton3ActionPerformed
-
+    }
     private void jMatrizConfusaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMatrizConfusaoActionPerformed
         // TODO add your handling code here:
-        MatrizConfusao jMatrizConfusao = new MatrizConfusao();
-        jMatrizConfusao.setLstResultados(lstResultados);
+        System.out.println(" lstResultados.size() " + lstResultados.size());
+        MatrizConfusao jMatrizConfusao = new MatrizConfusao(lstResultados);
         jMatrizConfusao.setVisible(true);
     }//GEN-LAST:event_jMatrizConfusaoActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -268,18 +290,21 @@ public class Interface extends javax.swing.JFrame {
         });
     }
     
-    private void loadFile(){
+    private void initTreinamento(){
         String[] split;
         String linha;
-        int indice = 0;
-        int classe = 0;
         double valor = 0.0;
+        int neuronioEsperado = 0, qtdeLinhasLidas = 0;
+        
+        long tempoInicial = System.currentTimeMillis();
         
         try {
             FileReader arq = new FileReader("src\\redeneural\\data\\pendigits.trainning");
             BufferedReader lerArq = new BufferedReader(arq);
             linha = lerArq.readLine(); // lê a primeira linha           
-
+            
+            jMessage.setText("Treinando a rede neural, aguarde...");
+            
             while (linha != null) {
                 split = linha.split(",");
                 
@@ -288,26 +313,58 @@ public class Interface extends javax.swing.JFrame {
                     if (valor > 0)
                         valor = valor / 10;
                     
-                    patternInput[indice][i] = valor;
+                    patternInput[0][i] = valor;
                 }
+                neuronioEsperado = Integer.parseInt(split[split.length - 1].trim());
+                
                 for (int i = 0; i < 10; i++) {
                     //a ultima posicao do arquivo e destinado a classe esperada
-                    if ((i + 1) == Float.parseFloat(split[split.length - 1])){
-                        expectedOutput[indice][i] = 1.0;
+                    if ((i + 1) == neuronioEsperado){
+                        expectedOutput[0][i] = 1.0;
                     }
                     else
-                        expectedOutput[indice][i] = 0.0;
+                        expectedOutput[0][i] = 0.0;
                 }
-               
+                
+                rede.setTrainingData(patternInput, expectedOutput);
+                rede.train(100);
+                
+                atualizaListaResultados(neuronioEsperado);
+                
                 linha = lerArq.readLine(); // lê da segunda até a última linha
-                indice++;
+                qtdeLinhasLidas++;
             }
 
+            jMessage.setText("");
+            
             arq.close();
         } catch (IOException e) {
             System.err.printf("Erro na abertura do arquivo: %s.\n",
             e.getMessage());
         }
+        
+        
+        long tempoFinal = System.currentTimeMillis();
+        
+        System.out.println("o metodo executou em " + (tempoFinal - tempoInicial));
+    }
+    
+    private void atualizaListaResultados(int resultadoEsperado){
+        Double[] saida = rede.getOutput();
+        int indice = 0;
+        Double maiorValor = 0.0;
+        Neuronio neuronioTemp  = new Neuronio();
+        
+        for (int i = 0; i < saida.length; i++) {//seta cor
+            if (saida[i] > maiorValor){
+                indice = i;
+                maiorValor = saida[i];
+            }
+        }
+        neuronioTemp.setId(resultadoEsperado);
+        neuronioTemp.setResultadoObtido(indice);
+                
+        lstResultados.add(neuronioTemp);
     }
     
     private void loadAmostraTemporaria(){
@@ -315,7 +372,8 @@ public class Interface extends javax.swing.JFrame {
         int indice = 0;
         Double[][] patternInputUniq   = new Double[1][16];
         Double[][] expectedOutputUniq = new Double[1][10]; 
-    
+        Neuronio neuronioTemp         = new Neuronio();
+        
         patternInputUniq[0][0] = 4.7 ;
         patternInputUniq[0][1] = 10.0;
         patternInputUniq[0][2] = 2.7;
@@ -345,7 +403,7 @@ public class Interface extends javax.swing.JFrame {
         expectedOutputUniq[0][9]  = 0.0;
         
         rede.setTrainingData(patternInputUniq, expectedOutputUniq);
-        double erro = rede.train(1000); //treinamento
+        double erro = rede.train(100); //treinamento
         
         Double[] saida = rede.getOutput();
         DefaultTableModel tabelaModelo = (DefaultTableModel) jTabela.getModel();
@@ -360,25 +418,15 @@ public class Interface extends javax.swing.JFrame {
         }
         jTabela.setRowSelectionInterval(indice, indice);
         
+        
+        neuronioTemp.setId(8);
+        neuronioTemp.setResultadoObtido(indice);
+                
+        lstResultados.add(neuronioTemp);
     }
     
     private void initRede(){
         rede = new Backpropagation();
-    }
-    private void initTreinamento(){
-        rede.setTrainingData(patternInput, expectedOutput);
-        
-        jMessage.setText("Treinando a rede neural, aguarde...");
-        Thread one = new Thread() {
-            public void run() {
-                rede.train(100);
-                jMessage.setText("");
-                initMatrizConfusao();
-            }  
-        };
-        
-        one.start();
-        //rede.train(100);
     }
     
     private void initMatrizConfusao(){
@@ -390,6 +438,7 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JButton jMatrizConfusao;
     private javax.swing.JLabel jMessage;
     private javax.swing.JScrollPane jScrollPane1;

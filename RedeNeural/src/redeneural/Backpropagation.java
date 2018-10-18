@@ -34,19 +34,7 @@ public class Backpropagation {
 
     private Double[][] inputTraining;
     private Double[][] expectedOutput;
-
-    private Integer epoch;
-    
-    /**
-     * Create new Artificial Neural Network with specify the number of neurons,
-     * learning rate and minimum error.
-     *
-     * @param numOfInput number of input unit.
-     * @param numOfHidden number of hidden neuron.
-     * @param numOfOutput number of output neuron.
-     * @param learningRate learning rate (0.1 - 1).
-    
-     */
+   
     public Backpropagation() {
         this.numOfInput   = 16;
         this.numOfHidden  = 13;
@@ -55,13 +43,13 @@ public class Backpropagation {
         this.init();
     }
 
+    public void zerarRede(){
+        this.init();
+    }
     /**
      * Inicializa os arrays e define pesos aleatorios
      */
     private void init() {
-
-        this.epoch = 0;
-
         this.X = new Double[numOfInput + 1];
         this.Y = new Double[numOfHidden + 1];
         this.Z = new Double[numOfOutput];
@@ -109,12 +97,13 @@ public class Backpropagation {
         Double erro = 0.0;
         if (this.inputTraining != null && this.expectedOutput != null) {
             Double err = 0.0;
+            long tempoInicial = System.currentTimeMillis();
+            
             while (times > 0) {
-                this.epoch++;
+                System.arraycopy(this.inputTraining[0] , 0, X, 0, this.inputTraining[0].length); // copiamos os dados de entrada para X
+                System.arraycopy(this.expectedOutput[0], 0, eO, 0, this.expectedOutput[0].length); //copiamos os dados de resultado esperado para eO
+                    
                 for (int i = 0; i < this.inputTraining.length; i++) {
-                    System.arraycopy(this.inputTraining[i], 0, X, 0, this.inputTraining[i].length); // copiamos os dados de entrada para X
-                    System.arraycopy(this.expectedOutput[i], 0, eO, 0, this.expectedOutput[i].length); //copiamos os dados de resultado esperado para eO
-
                     this.feedForward();
                     this.backPropagation(eO);
                 }
@@ -123,6 +112,10 @@ public class Backpropagation {
                 times--;
                 erro = err;
             } 
+            long tempoFinal = System.currentTimeMillis();
+            
+            //System.out.println("o metodo executou em " + (tempoFinal - tempoInicial));
+            
         } else {
             System.out.println("Sem dados para treinar");
         }
@@ -139,10 +132,11 @@ public class Backpropagation {
         Double err = 0.0;
         Double errTotal = 0.0;
 
+        System.arraycopy(this.inputTraining[0], 0, X, 0, this.inputTraining[0].length);
+        System.arraycopy(this.expectedOutput[0], 0, eO, 0, this.expectedOutput[0].length);
+            
         for (int i = 0; i < this.inputTraining.length; i++) {
-            System.arraycopy(this.inputTraining[i], 0, X, 0, this.inputTraining[i].length);
-            System.arraycopy(this.expectedOutput[i], 0, eO, 0, this.expectedOutput[i].length);
-            this.feedForward();
+            //this.feedForward();
             for (int a = 0; a < this.numOfOutput; a++) {
                 err += Math.pow((eO[a] - this.Z[a]), 2);
             }
@@ -152,17 +146,6 @@ public class Backpropagation {
         errTotal /= this.inputTraining.length;
         return errTotal;
     }
-
-    /**
-     * Test pattern after training.
-     *
-     * @param input input pattern.
-     */
-    public void test(Double[] input) {
-        System.arraycopy(input, 0, this.X, 0, this.numOfInput);
-        this.feedForward();
-    }
-
     /**
      * Feed-forward.
      */
@@ -172,22 +155,24 @@ public class Backpropagation {
     }
 
     /**
-     * Calculate each output of hidden neuron.
+     * Calcula cada saida do neurônio escondido.
      */
     private void setOutputY() {
         for (int a = 0; a < numOfHidden; a++) {
             this.sigmaForY[a] = 0.0;
         }
+        
         for (int j = 0; j < this.numOfHidden; j++) {
-            for (int i = 0; i < this.numOfInput + 1; i++) {
+            for (int i = 0; i < this.numOfInput; i++) {
                 try {
                     this.sigmaForY[j] = this.sigmaForY[j] + this.X[i] * this.w1[i][j];
                 } catch (Exception e) {
-                    System.out.println("erro" + e);
+                    System.out.println("erro, indice " + i + " " + this.X[i]);
                 }
 
             }
         }
+        
         for (int j = 0; j < numOfHidden; j++) {
             /*SIGMOID*/
             this.Y[j] = this.sigmoid(this.sigmaForY[j]);
@@ -195,7 +180,7 @@ public class Backpropagation {
     }
 
     /**
-     * Calculate each output of output neuron.
+     * Calcula cada saida do neurônio de saída.
      */
     private void setOutputZ() {
         for (int a = 0; a < numOfOutput; a++) {
@@ -209,13 +194,13 @@ public class Backpropagation {
         for (int k = 0; k < this.numOfOutput; k++) {
             /*SIGMOID*/
             this.Z[k] = this.sigmoid(this.sigmaForZ[k]);
-        }
+        }        
     }
 
     /**
      * Backpropagation.
      *
-     * @param expectedOutput set of expected output.
+     * @param expectedOutput entra o resultado esperado
      */
     private void backPropagation(Double[] expectedOutput) {
         Double[] fO = new Double[this.numOfOutput];
@@ -224,7 +209,7 @@ public class Backpropagation {
             /*SIGMOID*/
             fO[k] = (expectedOutput[k] - this.Z[k]) * this.sigmoidDerivative(this.sigmaForZ[k]);
         }
-        for (int j = 0; j < this.numOfHidden + 1; j++) {//+bias weight
+        for (int j = 0; j < this.numOfHidden; j++) {//+bias weight
             for (int k = 0; k < this.numOfOutput; k++) {
                 this.deltaw2[j][k] = this.learningRate * fO[k] * this.Y[j];
             }
@@ -241,7 +226,7 @@ public class Backpropagation {
             /*SIGMOID*/
             fH[j] = fHNet[j] * this.sigmoidDerivative(this.sigmaForY[j]);
         }
-        for (int i = 0; i < this.numOfInput + 1; i++) {
+        for (int i = 0; i < this.numOfInput; i++) {
             for (int j = 0; j < numOfHidden; j++) {
                 this.deltaw1[i][j] = this.learningRate * fH[j] * this.X[i];
             }
@@ -253,12 +238,12 @@ public class Backpropagation {
      * Atualiza todos pesos
      */
     private void changeWeight() {
-        for (int j = 0; j < numOfHidden + 1; j++) {
+        for (int j = 0; j < numOfHidden; j++) {
             for (int k = 0; k < numOfOutput; k++) {
                 this.w2[j][k] = this.w2[j][k] + this.deltaw2[j][k];
             }
         }
-        for (int i = 0; i < numOfInput + 1; i++) {
+        for (int i = 0; i < numOfInput; i++) {
             for (int j = 0; j < numOfHidden; j++) {
                 this.w1[i][j] = this.w1[i][j] + this.deltaw1[i][j];
             }
@@ -266,88 +251,25 @@ public class Backpropagation {
     }
 
     /**
-     * Sigmoid Activation Function.
+     * Função Sigmoidal
      * <br/>f(x) = 1 / (1 + exp(-x))
      *
-     * @param x an input value.
-     * @return a result of Sigmoid Activation Function.
+     * @param x um valor.
+     * @return o resultado da função sigmoidal
      */
     private Double sigmoid(Double x) {
         return 1 / (1 + (double) Math.exp(-x));
     }
-
-    /**
-     * Derivative of Sigmoid Activation Function.
-     * <br/>f'(x) = f(x) * (1 - f(x))
-     *
-     * @param x an input value.
-     * @return a result of Derivative Sigmoid Activation Function.
-     */
     private Double sigmoidDerivative(Double x) {
         return this.sigmoid(x) * (1 - this.sigmoid(x));
     }
 
     /**
-     * Sigmoid Bipolar Activation Function.
-     * <br/>f(x) = 2 / (1 + exp(-x)) - 1
+     * Méotod para retornar os valores do neurônio de saída
      *
-     * @param x an input value.
-     * @return a result of Sigmoid Bipolar Activation Function.
-     */
-    private Double bipolarSigmoid(Double x) {
-        return 2 / (1 + Math.exp(-x)) - 1;
-    }
-
-    /**
-     * Derivative of Sigmoid Bipolar Activation Function.
-     * <br/>f'(x) = 0.5 * (1 + f(x)) * (1 - f(x))
-     *
-     * @param x an input value.
-     * @return a result of Derivative Sigmoid Bipolar Activation Function.
-     */
-    private Double bipolarSigmoidDerivative(Double x) {
-        return 0.5 * (1 + this.bipolarSigmoid(x)) * (1 - this.bipolarSigmoid(x));
-    }
-
-    /**
-     * TanH Activation Function.
-     * <br/>f(x) = 2 / (1 + exp(-x)) - 1
-     * <br/>output range -1 until 1.
-     *
-     * @param x an input value.
-     * @return a result of TanH Activation Function.
-     */
-    private Double tanH(Double x) {
-        return 2 / (1 + Math.exp(-2 * x)) - 1;
-    }
-
-    /**
-     * Derivative of TanH Activation Function.
-     * <br/>f'(x) = 0.5 * (1 + f(x)) * (1 - f(x))
-     * <br/>output range -1 until 1.
-     *
-     * @param x an input value.
-     * @return a result of Derivative TanH Activation Function.
-     */
-    private Double tanHDerivative(Double x) {
-        return 1 - Math.pow(this.tanH(x), 2);
-    }
-
-    /**
-     * Method for getting output of each output neuron.
-     *
-     * @return output of each output neuron.
+     * @return os valores do neurônio de saída.
      */
     public Double[] getOutput() {
         return this.Z;
-    }
-
-    /**
-     * Method for getting epoch until minimum error reached.
-     *
-     * @return epoch until minimum error reached.
-     */
-    public Integer getEpoch() {
-        return this.epoch;
     }
 }

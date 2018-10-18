@@ -24,7 +24,9 @@ public class MatrizConfusao extends javax.swing.JFrame {
      */
     private ArrayList<Neuronio> lstResultados;
     
-    public MatrizConfusao() {
+    public MatrizConfusao(ArrayList<Neuronio> lstResultados) {
+        this.setLstResultados(lstResultados);
+        
         initComponents();
         initResultados();
     }
@@ -63,12 +65,29 @@ public class MatrizConfusao extends javax.swing.JFrame {
             new String [] {
                 "", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jResultados.setPreferredSize(new java.awt.Dimension(750, 160));
         jScrollPane2.setViewportView(jResultados);
         if (jResultados.getColumnModel().getColumnCount() > 0) {
-            jResultados.getColumnModel().getColumn(0).setMinWidth(25);
-            jResultados.getColumnModel().getColumn(0).setMaxWidth(25);
+            jResultados.getColumnModel().getColumn(0).setResizable(false);
+            jResultados.getColumnModel().getColumn(1).setResizable(false);
+            jResultados.getColumnModel().getColumn(2).setResizable(false);
+            jResultados.getColumnModel().getColumn(3).setResizable(false);
+            jResultados.getColumnModel().getColumn(4).setResizable(false);
+            jResultados.getColumnModel().getColumn(5).setResizable(false);
+            jResultados.getColumnModel().getColumn(6).setResizable(false);
+            jResultados.getColumnModel().getColumn(7).setResizable(false);
+            jResultados.getColumnModel().getColumn(8).setResizable(false);
+            jResultados.getColumnModel().getColumn(9).setResizable(false);
+            jResultados.getColumnModel().getColumn(10).setResizable(false);
         }
 
         jLabel1.setText("Resultados obtidos");
@@ -161,7 +180,7 @@ public class MatrizConfusao extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MatrizConfusao().setVisible(true);
+                new MatrizConfusao(new ArrayList<Neuronio>()).setVisible(true);
             }
         });
     }
@@ -193,7 +212,8 @@ public class MatrizConfusao extends javax.swing.JFrame {
                 indiceX = lstResultados.get(i).getId();
                 indiceY = lstResultados.get(i).getResultadoObtido();
                 
-                matrizConfusao[indiceX][indiceY]++;
+                System.out.println(" calculando... ");
+                matrizConfusao[indiceX-1][indiceY]++;
             }
         }
         
