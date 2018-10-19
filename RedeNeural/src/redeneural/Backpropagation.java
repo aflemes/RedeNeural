@@ -39,7 +39,7 @@ public class Backpropagation {
         this.numOfInput   = 16;
         this.numOfHidden  = 13;
         this.numOfOutput  = 10;
-        this.learningRate = 0.5;
+        this.learningRate = 0.8;
         this.init();
     }
 
@@ -121,6 +121,26 @@ public class Backpropagation {
         }
         return erro;
     }
+    
+    public void aplication(int times) {
+        Double[] eO = new Double[numOfOutput];
+        
+        if (this.inputTraining != null && this.expectedOutput != null) {
+            while (times > 0) {
+                System.arraycopy(this.inputTraining[0] , 0, X, 0, this.inputTraining[0].length); // copiamos os dados de entrada para X
+                System.arraycopy(this.expectedOutput[0], 0, eO, 0, this.expectedOutput[0].length); //copiamos os dados de resultado esperado para eO
+                    
+                for (int i = 0; i < this.inputTraining.length; i++) {
+                    this.feedForward();
+                    this.backPropagation(eO);
+                }                
+                times--;                
+            }             
+            
+        } else {
+            System.out.println("Sem dados para aplicar");
+        }
+    }
 
     /**
      * Calculate error average for all pattern.
@@ -200,7 +220,7 @@ public class Backpropagation {
     /**
      * Backpropagation.
      *
-     * @param expectedOutput entra o resultado esperado
+     * @param expectedOutput entra o resultado esperado     
      */
     private void backPropagation(Double[] expectedOutput) {
         Double[] fO = new Double[this.numOfOutput];

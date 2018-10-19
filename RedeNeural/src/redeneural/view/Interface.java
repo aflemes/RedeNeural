@@ -32,7 +32,7 @@ public class Interface extends javax.swing.JFrame {
     private Double[][] expectedOutput = new Double[1][10]; 
     private ArrayList<Neuronio> lstResultados = new ArrayList<Neuronio>();
     NumberFormat formater = new DecimalFormat("#0.000000");
-    private int numeroTreinamentos = 200;
+    private int numeroTreinamentos = 100;
     
     public Interface() {
         initComponents();
@@ -56,7 +56,7 @@ public class Interface extends javax.swing.JFrame {
         jTestValores = new javax.swing.JTextField();
         jMessage = new javax.swing.JLabel();
         jMatrizConfusao = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jTeste = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,7 +91,6 @@ public class Interface extends javax.swing.JFrame {
                 "Neurônio", "Saída"
             }
         ));
-        jTabela.setPreferredSize(new java.awt.Dimension(150, 160));
         jTabela.setRequestFocusEnabled(false);
         jScrollPane1.setViewportView(jTabela);
 
@@ -118,10 +117,11 @@ public class Interface extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setText("Iniciar Teste");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        jTeste.setText("Iniciar Teste");
+        jTeste.setEnabled(false);
+        jTeste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                jTesteActionPerformed(evt);
             }
         });
 
@@ -140,12 +140,13 @@ public class Interface extends javax.swing.JFrame {
                             .addComponent(jTestValores)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 395, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jMatrizConfusao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jTeste, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jMatrizConfusao))
                         .addGap(30, 30, 30))))
         );
         layout.setVerticalGroup(
@@ -158,11 +159,11 @@ public class Interface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
+                        .addComponent(jTeste)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jMatrizConfusao))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -176,11 +177,14 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        jMatrizConfusao.setEnabled(false);
+        jTeste.setEnabled(false);
+        
         Thread treinamento = new Thread(){
             public void run(){
                 jMessage.setText("Treinando a rede neural, aguarde...");
-                initTreinamento();
-                jMatrizConfusao.setEnabled(true);
+                initTreinamento();   
+                jTeste.setEnabled(true);
             }
         };
 
@@ -189,8 +193,7 @@ public class Interface extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        loadAmostraTemporaria();
-        jMatrizConfusao.setEnabled(true);
+        loadAmostra(" 88, 92,  2, 99, 16, 66, 94, 37, 70,  0,  0, 24, 42, 65,100,100, 8");
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTestValoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTestValoresActionPerformed
@@ -198,40 +201,13 @@ public class Interface extends javax.swing.JFrame {
     }//GEN-LAST:event_jTestValoresActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        Double[][] patternInputUniq   = new Double[1][16];
-        Double[][] expectedOutputUniq = new Double[1][10];
-        String[] split = jTestValores.getText().split(",");
-        int neuronioEsperado = 0,indice = 0;
-        Double valor = 0.0;
+        String linha = jTestValores.getText();
         
-        if (split.length != 17){
-            JOptionPane.showMessageDialog(null, "Quantidade de dados teste inválido!", "Informacao!", JOptionPane.ERROR_MESSAGE, null);
-            return;
+        if (linha.split(",").length != 17){
+            JOptionPane.showMessageDialog(null," Quantidade de valores inválido!"); 
         }
-        for (int i = 0; i < split.length - 1; i++) {
-            valor = Double.parseDouble(split[i]);
-            if (valor > 0)
-                valor = valor / 10;
-
-            patternInputUniq[indice][i] = valor;
-        }
-        neuronioEsperado = Integer.parseInt(split[split.length - 1]);
-        
-        for (int i = 0; i < 10; i++) {
-            //a ultima posicao do arquivo e destinado a classe esperada
-            if (i == neuronioEsperado){
-                expectedOutputUniq[indice][i] = 1.0;
-            }
-            else
-                expectedOutputUniq[indice][i] = 0.0;
-        }
-        
-        rede.setTrainingData(patternInputUniq, expectedOutputUniq);
-               
-        double erro = rede.train(numeroTreinamentos); //treinamento
-        
-        listaResultadosTela(neuronioEsperado);
+        else            
+            loadAmostra(jTestValores.getText());
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void listaResultadosTela(int neuronioEsperado){
@@ -272,9 +248,18 @@ public class Interface extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jMatrizConfusaoActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void jTesteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTesteActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+        Thread aplicacao = new Thread(){
+            public void run(){
+                jMessage.setText("Aplicando dados, aguarde...");
+                initAplicacao();    
+                jMatrizConfusao.setEnabled(true);
+            }
+        };
+
+        aplicacao.start();
+    }//GEN-LAST:event_jTesteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -309,6 +294,60 @@ public class Interface extends javax.swing.JFrame {
                 new Interface().setVisible(true);
             }
         });
+    }
+    
+    private void initAplicacao(){
+        String[] split;
+        String linha;
+        double valor = 0.0;
+        int neuronioEsperado = 0, qtdeLinhasLidas = 0;
+        
+        long tempoInicial = System.currentTimeMillis();
+        
+        try {
+            FileReader arq = new FileReader("src\\redeneural\\data\\pendigits.trainning");
+            BufferedReader lerArq = new BufferedReader(arq);
+            linha = lerArq.readLine(); // lê a primeira linha           
+            
+            while (linha != null) {
+                split = linha.split(",");
+                
+                for (int i = 0; i < split.length - 1; i++) {
+                    valor = Double.parseDouble(split[i]);
+                    if (valor > 0)
+                        valor = valor / 10;
+                    
+                    patternInput[0][i] = valor;
+                }
+                neuronioEsperado = Integer.parseInt(split[split.length - 1].trim());
+                
+                for (int i = 0; i < 10; i++) {
+                    //a ultima posicao do arquivo e destinado a classe esperada
+                    if ((i) == neuronioEsperado){
+                        expectedOutput[0][i] = 1.0;
+                    }
+                    else
+                        expectedOutput[0][i] = 0.0;
+                }
+                
+                rede.setTrainingData(patternInput, expectedOutput);
+                rede.aplication(numeroTreinamentos);
+                
+                atualizaListaResultados(neuronioEsperado);
+                
+                linha = lerArq.readLine(); // lê da segunda até a última linha
+                qtdeLinhasLidas++;                
+            }            
+            arq.close();
+        } catch (IOException e) {
+            System.err.printf("Erro na abertura do arquivo: %s.\n",
+            e.getMessage());
+        }
+        
+        
+        long tempoFinal = System.currentTimeMillis();
+        
+        jMessage.setText("O treinamento concluído em " + (tempoFinal - tempoInicial) + " ms");
     }
     
     private void initTreinamento(){
@@ -348,8 +387,6 @@ public class Interface extends javax.swing.JFrame {
                 rede.setTrainingData(patternInput, expectedOutput);
                 rede.train(numeroTreinamentos);
                 
-                atualizaListaResultados(neuronioEsperado);
-                
                 linha = lerArq.readLine(); // lê da segunda até a última linha
                 qtdeLinhasLidas++;                
             }            
@@ -383,41 +420,25 @@ public class Interface extends javax.swing.JFrame {
         lstResultados.add(neuronioTemp);
     }
     
-    private void loadAmostraTemporaria(){
+    private void loadAmostra(String linha){
         Double maiorValor = 0.0;
         int indice = 0;
-        Double[][] patternInputUniq   = new Double[1][16];
+        Double[][] patternInputUniq   = new Double[1][17];
         Double[][] expectedOutputUniq = new Double[1][10]; 
-        Neuronio neuronioTemp         = new Neuronio();
+        Neuronio neuronioTemp         = new Neuronio();        
+        String elementos[]            = linha.split(",");
         
-        patternInputUniq[0][0] = 4.7 ;
-        patternInputUniq[0][1] = 10.0;
-        patternInputUniq[0][2] = 2.7;
-        patternInputUniq[0][3] = 8.1;
-        patternInputUniq[0][4] = 5.7;
-        patternInputUniq[0][5] = 3.7;
-        patternInputUniq[0][6] = 2.6;
-        patternInputUniq[0][7] = 0.0;
-        patternInputUniq[0][8] = 0.0;
-        patternInputUniq[0][9] = 2.3;
-        patternInputUniq[0][10] = 5.6;
-        patternInputUniq[0][11] = 5.3;
-        patternInputUniq[0][12] = 10.0;
-        patternInputUniq[0][13] = 9.0;
-        patternInputUniq[0][14] = 4.0;
-        patternInputUniq[0][15] = 9.8;
-                
-        expectedOutputUniq[0][0]  = 0.0;
-        expectedOutputUniq[0][1]  = 0.0;
-        expectedOutputUniq[0][2]  = 0.0;
-        expectedOutputUniq[0][3]  = 0.0;
-        expectedOutputUniq[0][4]  = 0.0;
-        expectedOutputUniq[0][5]  = 0.0;
-        expectedOutputUniq[0][6]  = 0.0;
-        expectedOutputUniq[0][7]  = 0.0;
-        expectedOutputUniq[0][8]  = 1.0;
-        expectedOutputUniq[0][9]  = 0.0;
+        for (int i = 0; i < elementos.length - 1; i++) {
+            patternInputUniq[0][i] = Double.parseDouble(elementos[i].trim()) / 10;
+        }
         
+        for (int i = 0; i < 10; i++) {
+            if (Integer.parseInt(elementos[elementos.length - 1].trim()) == i){
+                expectedOutputUniq[0][i]  = 1.0;
+            }
+            else 
+                expectedOutputUniq[0][i]  = 0.0;            
+        }        
         rede.setTrainingData(patternInputUniq, expectedOutputUniq);
         double erro = rede.train(numeroTreinamentos); //treinamento
         
@@ -454,11 +475,11 @@ public class Interface extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jMatrizConfusao;
     private javax.swing.JLabel jMessage;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTabela;
     private javax.swing.JTextField jTestValores;
+    private javax.swing.JButton jTeste;
     // End of variables declaration//GEN-END:variables
 }
