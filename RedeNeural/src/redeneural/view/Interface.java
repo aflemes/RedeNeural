@@ -9,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class Interface extends javax.swing.JFrame {
     private Double[][] expectedOutput = new Double[1][10]; 
     private ArrayList<Neuronio> lstResultados = new ArrayList<Neuronio>();
     NumberFormat formater = new DecimalFormat("#0.000000");
-    private int numeroTreinamentos = 100;
+    private int numeroTreinamentos = 200;
     
     public Interface() {
         initComponents();
@@ -305,8 +307,8 @@ public class Interface extends javax.swing.JFrame {
         long tempoInicial = System.currentTimeMillis();
         
         try {
-            FileReader arq = new FileReader("src\\redeneural\\data\\pendigits.trainning");
-            BufferedReader lerArq = new BufferedReader(arq);
+            InputStream is = this.getClass().getResourceAsStream("/redeneural/data/pendigits.testing");
+            BufferedReader lerArq = new BufferedReader(new InputStreamReader(is));
             linha = lerArq.readLine(); // lê a primeira linha           
             
             while (linha != null) {
@@ -338,7 +340,7 @@ public class Interface extends javax.swing.JFrame {
                 linha = lerArq.readLine(); // lê da segunda até a última linha
                 qtdeLinhasLidas++;                
             }            
-            arq.close();
+            lerArq.close();
         } catch (IOException e) {
             System.err.printf("Erro na abertura do arquivo: %s.\n",
             e.getMessage());
@@ -359,8 +361,9 @@ public class Interface extends javax.swing.JFrame {
         long tempoInicial = System.currentTimeMillis();
         
         try {
-            FileReader arq = new FileReader("src\\redeneural\\data\\pendigits.trainning");
-            BufferedReader lerArq = new BufferedReader(arq);
+            InputStream is = this.getClass().getResourceAsStream("/redeneural/data/pendigits.trainning");
+            BufferedReader lerArq = new BufferedReader(new InputStreamReader(is));
+            
             linha = lerArq.readLine(); // lê a primeira linha           
             
             while (linha != null) {
@@ -390,7 +393,7 @@ public class Interface extends javax.swing.JFrame {
                 linha = lerArq.readLine(); // lê da segunda até a última linha
                 qtdeLinhasLidas++;                
             }            
-            arq.close();
+            lerArq.close();
         } catch (IOException e) {
             System.err.printf("Erro na abertura do arquivo: %s.\n",
             e.getMessage());

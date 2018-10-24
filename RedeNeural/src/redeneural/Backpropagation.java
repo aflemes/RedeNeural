@@ -97,7 +97,6 @@ public class Backpropagation {
         Double erro = 0.0;
         if (this.inputTraining != null && this.expectedOutput != null) {
             Double err = 0.0;
-            long tempoInicial = System.currentTimeMillis();
             
             while (times > 0) {
                 System.arraycopy(this.inputTraining[0] , 0, X, 0, this.inputTraining[0].length); // copiamos os dados de entrada para X
@@ -107,14 +106,11 @@ public class Backpropagation {
                     this.feedForward();
                     this.backPropagation(eO);
                 }
-                err = this.caclERR();
+                err = this.calculaErro();
                 //System.out.println("Taxa de erro: " + err);
                 times--;
                 erro = err;
             } 
-            long tempoFinal = System.currentTimeMillis();
-            
-            //System.out.println("o metodo executou em " + (tempoFinal - tempoInicial));
             
         } else {
             System.out.println("Sem dados para treinar");
@@ -143,11 +139,11 @@ public class Backpropagation {
     }
 
     /**
-     * Calculate error average for all pattern.
+     * Calcula o erro dentre as camadas.
      *
-     * @return error average.
+     * @return media do erro.
      */
-    private Double caclERR() {
+    private Double calculaErro() {
         Double[] eO = new Double[numOfOutput];
         Double err = 0.0;
         Double errTotal = 0.0;
@@ -173,7 +169,6 @@ public class Backpropagation {
         this.setOutputY();
         this.setOutputZ();
     }
-
     /**
      * Calcula cada saida do neurônio escondido.
      */
@@ -189,7 +184,6 @@ public class Backpropagation {
                 } catch (Exception e) {
                     System.out.println("erro, indice " + i + " " + this.X[i]);
                 }
-
             }
         }
         
